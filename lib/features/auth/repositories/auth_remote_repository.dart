@@ -4,8 +4,15 @@ import 'package:client/core/constants/server_constant.dart';
 import 'package:client/core/failure/app_failure.dart';
 import 'package:client/features/auth/model/user_model.dart';
 import 'package:fpdart/fpdart.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'auth_remote_repository.g.dart';
+
+@riverpod
+AuthRemoteRepository authRemoteRepository(AuthRemoteRepositoryRef ref) {
+  return AuthRemoteRepository();
+}
 
 class AuthRemoteRepository {
   Future<Either<AppFailure, UserModel>> signup({
@@ -30,7 +37,7 @@ class AuthRemoteRepository {
 
       final resBodyMap = jsonDecode(response.body) as Map<String, dynamic>;
 
-      if (response.statusCode != 201) {
+      if (response.statusCode != 200) {
         return Left(AppFailure(resBodyMap['detail']));
       }
 
