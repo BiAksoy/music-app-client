@@ -1,4 +1,5 @@
 import 'package:client/core/theme/app_colors.dart';
+import 'package:client/features/auth/repositories/auth_remote_repository.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
 import 'package:client/features/auth/view/widgets/auth_field.dart';
 import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
@@ -64,8 +65,14 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 20),
               AuthGradientButton(
                 buttonText: 'Sign Up',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {}
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await AuthRemoteRepository().signup(
+                      name: _nameController.text.trim(),
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text,
+                    );
+                  }
                 },
               ),
               const SizedBox(height: 20),
