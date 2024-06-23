@@ -36,3 +36,11 @@ Future<File?> pickAudio() async {
     return null;
   }
 }
+
+String rgbaToHex(Color color) {
+  return color.value.toRadixString(16).substring(2);
+}
+
+Color hexToColor(String hex) {
+  return Color(int.parse('0xFF$hex'));
+}
