@@ -51,5 +51,10 @@
 	<string>Photos from gallery required</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone required</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
