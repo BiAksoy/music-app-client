@@ -1,8 +1,8 @@
 import 'package:client/core/theme/app_colors.dart';
-import 'package:client/core/utils/show_snackbar.dart';
+import 'package:client/core/utils/utils.dart';
 import 'package:client/core/widgets/loader.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
-import 'package:client/features/auth/view/widgets/auth_field.dart';
+import 'package:client/core/widgets/custom_field.dart';
 import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -71,17 +71,17 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    AuthField(
+                    CustomField(
                       hintText: 'Name',
                       controller: _nameController,
                     ),
                     const SizedBox(height: 15),
-                    AuthField(
+                    CustomField(
                       hintText: 'Email',
                       controller: _emailController,
                     ),
                     const SizedBox(height: 15),
-                    AuthField(
+                    CustomField(
                       hintText: 'Password',
                       controller: _passwordController,
                       obscureText: true,
