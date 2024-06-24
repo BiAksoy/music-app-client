@@ -27,7 +27,6 @@ class SongsPage extends ConsumerWidget {
                     height: 260,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
                       itemCount: songs.length,
                       itemBuilder: (context, index) {
                         final song = songs[index];
