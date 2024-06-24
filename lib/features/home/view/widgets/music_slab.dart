@@ -3,7 +3,6 @@ import 'package:client/core/theme/app_colors.dart';
 import 'package:client/core/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MusicSlab extends ConsumerWidget {
@@ -12,6 +11,7 @@ class MusicSlab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSong = ref.watch(currentSongNotifierProvider);
+    final currentSongNotifier = ref.read(currentSongNotifierProvider.notifier);
 
     if (currentSong == null) {
       return const SizedBox();
@@ -76,29 +76,48 @@ class MusicSlab extends ConsumerWidget {
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: const Icon(
-                      CupertinoIcons.play_fill,
+                    icon: Icon(
+                      currentSongNotifier.isPlaying
+                          ? CupertinoIcons.pause_fill
+                          : CupertinoIcons.play_fill,
                       color: AppColors.whiteColor,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      currentSongNotifier.playPause();
+                    },
                   ),
                 ],
               ),
             ],
           ),
         ),
-        Positioned(
-          bottom: 0,
-          left: 8,
-          child: Container(
-            height: 2,
-            width: 20,
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              borderRadius: BorderRadius.circular(7),
-            ),
-          ),
-        ),
+        StreamBuilder(
+            stream: currentSongNotifier.audioPlayer?.positionStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox();
+              }
+              final position = snapshot.data;
+              final duration = currentSongNotifier.audioPlayer?.duration;
+              double progress = 0.0;
+
+              if (position != null && duration != null) {
+                progress = position.inMilliseconds / duration.inMilliseconds;
+              }
+
+              return Positioned(
+                bottom: 0,
+                left: 8,
+                child: Container(
+                  height: 2,
+                  width: (MediaQuery.of(context).size.width - 32) * progress,
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              );
+            }),
         Positioned(
           bottom: 0,
           left: 8,

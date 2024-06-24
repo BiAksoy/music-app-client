@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_public_notifier_properties
 import 'package:client/features/home/models/song_model.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -6,7 +7,8 @@ part 'current_song_notifier.g.dart';
 
 @riverpod
 class CurrentSongNotifier extends _$CurrentSongNotifier {
-  AudioPlayer? _audioPlayer;
+  AudioPlayer? audioPlayer;
+  bool isPlaying = false;
 
   @override
   SongModel? build() {
@@ -14,16 +16,40 @@ class CurrentSongNotifier extends _$CurrentSongNotifier {
   }
 
   void updateSong(SongModel song) async {
-    _audioPlayer = AudioPlayer();
+    audioPlayer = AudioPlayer();
 
     final audioSource = AudioSource.uri(
       Uri.parse(song.song_url),
     );
 
-    await _audioPlayer!.setAudioSource(audioSource);
+    await audioPlayer!.setAudioSource(audioSource);
 
-    _audioPlayer!.play();
+    audioPlayer!.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        audioPlayer!.seek(Duration.zero);
+        audioPlayer!.pause();
+        isPlaying = false;
+
+        this.state = this.state?.copyWith(hex_code: this.state?.hex_code);
+      }
+    });
+
+    audioPlayer!.play();
+
+    isPlaying = true;
 
     state = song;
+  }
+
+  void playPause() {
+    if (isPlaying) {
+      audioPlayer?.pause();
+    } else {
+      audioPlayer?.play();
+    }
+
+    isPlaying = !isPlaying;
+
+    state = state?.copyWith(hex_code: state?.hex_code);
   }
 }
