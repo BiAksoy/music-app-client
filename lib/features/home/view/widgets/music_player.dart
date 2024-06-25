@@ -42,6 +42,7 @@ class MusicPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSong = ref.watch(currentSongNotifierProvider);
+    final currentSongNotifier = ref.read(currentSongNotifierProvider.notifier);
 
     return Container(
       decoration: BoxDecoration(
@@ -133,45 +134,82 @@ class MusicPlayer extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  Column(
-                    children: [
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: AppColors.whiteColor,
-                          inactiveTrackColor:
-                              AppColors.whiteColor.withOpacity(0.117),
-                          thumbColor: AppColors.whiteColor,
-                          trackHeight: 4,
-                          overlayShape: SliderComponentShape.noOverlay,
-                        ),
-                        child: Slider(
-                          value: 0.5,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Row(
-                    children: [
-                      Text(
-                        '0:00',
-                        style: TextStyle(
-                          color: AppColors.whiteColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      Spacer(),
-                      Text(
-                        '3:00',
-                        style: TextStyle(
-                          color: AppColors.whiteColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ],
-                  ),
+                  StreamBuilder(
+                      stream: currentSongNotifier.audioPlayer!.positionStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox();
+                        }
+                        final position = snapshot.data;
+                        final duration =
+                            currentSongNotifier.audioPlayer?.duration;
+                        double progress = 0.0;
+
+                        if (position != null && duration != null) {
+                          progress =
+                              position.inMilliseconds / duration.inMilliseconds;
+                        }
+
+                        String formatDuration(Duration? duration) {
+                          if (duration == null) return '0:00';
+                          final minutes = duration.inMinutes;
+                          final seconds = duration.inSeconds % 60;
+                          final formattedSeconds =
+                              seconds < 10 ? '0$seconds' : '$seconds';
+                          return '$minutes:$formattedSeconds';
+                        }
+
+                        return Column(
+                          children: [
+                            StatefulBuilder(
+                              builder: (context, setState) {
+                                return SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    activeTrackColor: AppColors.whiteColor,
+                                    inactiveTrackColor:
+                                        AppColors.whiteColor.withOpacity(0.117),
+                                    thumbColor: AppColors.whiteColor,
+                                    trackHeight: 4,
+                                    overlayShape:
+                                        SliderComponentShape.noOverlay,
+                                  ),
+                                  child: Slider(
+                                    value: progress,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        progress = value;
+                                      });
+                                    },
+                                    onChangeEnd: currentSongNotifier.seek,
+                                  ),
+                                );
+                              },
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  formatDuration(position),
+                                  style: const TextStyle(
+                                    color: AppColors.whiteColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  formatDuration(duration),
+                                  style: const TextStyle(
+                                    color: AppColors.whiteColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }),
                   const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -191,9 +229,13 @@ class MusicPlayer extends ConsumerWidget {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          CupertinoIcons.play_circle_fill,
+                        onPressed: () {
+                          currentSongNotifier.playPause();
+                        },
+                        icon: Icon(
+                          currentSongNotifier.isPlaying
+                              ? CupertinoIcons.pause_circle_fill
+                              : CupertinoIcons.play_circle_fill,
                         ),
                         iconSize: 80,
                         color: AppColors.whiteColor,
