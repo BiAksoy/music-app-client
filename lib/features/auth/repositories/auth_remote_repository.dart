@@ -37,7 +37,7 @@ class AuthRemoteRepository {
 
       final resBodyMap = jsonDecode(response.body) as Map<String, dynamic>;
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 201) {
         return Left(AppFailure(resBodyMap['detail']));
       }
 
