@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UploadSongPage extends ConsumerStatefulWidget {
+  static route() =>
+      MaterialPageRoute(builder: (context) => const UploadSongPage());
+
   const UploadSongPage({super.key});
 
   @override

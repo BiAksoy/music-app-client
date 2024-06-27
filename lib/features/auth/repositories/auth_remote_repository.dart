@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:client/core/constants/server_constant.dart';
 import 'package:client/core/failure/app_failure.dart';
-import 'package:client/features/auth/model/user_model.dart';
+import 'package:client/core/models/user_model.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
